@@ -89,7 +89,7 @@ def create_simple_world():
     add_obj_to_state({
         Keys.kind:'tree',
         Keys.loc: (7,8),
-        Keys.inventory:  [wood]
+        Keys.inventory:  ['wood']
         })
 
 ### Display   ###

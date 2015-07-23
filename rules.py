@@ -1,12 +1,18 @@
 ###   Actions   ###
 
-#O is object, S is subject
-ACTIONS = {
-    ({'at O', 'weight_light O'}, 'get O', {'has O'}),
-    ({'at O'}, 'destroy O', {'inventory_available O'}),
+# Actions are 3-tuples of (precontitions, action, postconditions)
+ACTIONS = [
+    ({'at', 'weight light'}, 'get', {'has'}),
+    ({'at', 'has axe'}, 'destroy', {'obj_inventory_available'})
+]
 
+###   Condition tests   ###
 
-}
+def condition_met(actor, condition, target, intermediary_state):
+    words = condition.split(' ')
+    predicate = words[0]
+    if predicate == 'at':
+        return actor[Keys.loc] == target[Keys.loc]
 
 ###   Immutable state   ###
 
@@ -18,7 +24,7 @@ class Keys:
     weight = 5
 
 WEIGHTS = {
-    'wood' : 'light'
+    'wood' : 'light',
     'axe' : 'light',
     'dwarf' : 'heavy',
     'cliff' : 'massive',
@@ -32,7 +38,7 @@ GLYPH_MAP = {
     'grass':'"',
     'cliff':'#',
     'axe':'a',
-    'tree':'T'
+    'tree':'T',
     'wood':'w'
 }
 
