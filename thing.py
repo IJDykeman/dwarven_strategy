@@ -1,49 +1,7 @@
 import heapq
-from rules import *
-from algorithms import *
+from libdwarf import * 
 
-###   Mutable World State ###
 
-state = []
-
-###   Querying Mutable World State   ###
-
-def select(args, obj_set = state):
-    result = []
-    for item in obj_set:
-        if all([key in item and item[key] == val for key, val in args]):
-            result.append(item)
-    return result
-
-def is_loc_passable(loc, obj_set=state):
-    return all([not is_of_kind(obj, 'impassable') 
-                for obj in select([(Keys.loc,loc)])])
-
-def passable_from(p, obj_set=state):
-    result = []
-    for loc in get_adjacent_tiles(p):
-        if is_loc_passable(loc, obj_set = obj_set):
-            result.append(loc)
-    return result
-
-###   Mutating World State   ###
-
-def add_obj_to_state(properties, obj_set=state):
-    if not Keys.inventory in properties:
-        properties[Keys.inventory] = []
-    assert Keys.kind in properties
-    properties[Keys.weight] = get_weight(properties[Keys.kind])
-    kind = properties[Keys.kind]
-    obj_set.append(properties)
-
-def add_object_at_all(kind_to_add, criteria):
-    places_to_add = select(criteria)
-    for obj in places_to_add:
-        loc = obj[Keys.loc]
-        add_obj_to_state({
-            Keys.kind: kind_to_add,
-            Keys.loc: loc
-            })
 
 def create_simple_world():
     tiles = [
