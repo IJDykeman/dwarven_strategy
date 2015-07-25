@@ -203,8 +203,6 @@ def select(args, obj_set=state):
     returns all items in obj_set (state by default) that meet the contstraints
     set by the set of tuples {(attribute_key, desired_value)}
     """
-    #print args
-    #print obj_set
     result = []
     for item in obj_set:
         item_meets_criteria = True

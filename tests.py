@@ -42,21 +42,6 @@ def create_simple_world():
         Keys.inventory:  ['wood']
     })
 
-### Display   ###
-
-
-def draw_world():
-    for x in range(WIDTH):
-        for y in range(WIDTH):
-            at_loc = select([(Keys.loc, (x, y))])
-            non_tiles = filter(is_not_tile, at_loc)
-            if non_tiles:
-                print get_glyph(non_tiles.pop()[Keys.kind]),
-            else:
-                print get_glyph(at_loc.pop()[Keys.kind]),
-        print''
-
-
 fili = {
     Keys.name: 'fili',
     Keys.kind: 'dwarf',
