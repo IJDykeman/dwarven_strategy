@@ -22,6 +22,14 @@
 				"buffer_size": 1665,
 				"line_ending": "Unix"
 			}
+		},
+		{
+			"file": "sublime_dwarves.sublime-project",
+			"settings":
+			{
+				"buffer_size": 115,
+				"line_ending": "Unix"
+			}
 		}
 	],
 	"build_system": "Packages/Python/Python.sublime-build",
@@ -107,15 +115,19 @@
 		"side_bar_visible": false,
 		"status_bar_visible": false
 	},
+	"expanded_folders":
+	[
+		"/home/isaac/Desktop/dwarf_game"
+	],
 	"file_history":
 	[
+		"/home/isaac/.config/sublime-text-3/Packages/Default/Preferences.sublime-settings",
 		"/home/isaac/Desktop/dwarf_game/.ropeproject/config.py",
 		"/home/isaac/Desktop/dwarf_game/algorithms.pyc",
 		"/home/isaac/Desktop/dwarf_game/rules.pyc",
 		"/home/isaac/Desktop/dwarf_game/thing.pyc",
 		"/usr/lib/python2.7/heapq.py",
 		"/home/isaac/Desktop/dwarf_game/thing.py",
-		"/home/isaac/.config/sublime-text-3/Packages/Default/Preferences.sublime-settings",
 		"/home/isaac/.config/sublime-text-3/Packages/User/Preferences.sublime-settings"
 	],
 	"find":
@@ -134,6 +146,7 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"python"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -167,8 +180,8 @@
 						"selection":
 						[
 							[
-								4149,
-								4149
+								4296,
+								4304
 							]
 						],
 						"settings":
@@ -188,7 +201,7 @@
 			]
 		},
 		{
-			"selected": 0,
+			"selected": 1,
 			"sheets":
 			[
 				{
@@ -214,6 +227,34 @@
 							"syntax": "Packages/Python/Python.tmLanguage",
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "sublime_dwarves.sublime-project",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 115,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								105,
+								105
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -305,15 +346,15 @@
 		],
 		"width": 0.0
 	},
-	"selected_group": 1,
+	"selected_group": 0,
 	"settings":
 	{
 	},
 	"show_minimap": true,
 	"show_open_files": false,
 	"show_tabs": true,
-	"side_bar_visible": true,
-	"side_bar_width": 150.0,
+	"side_bar_visible": false,
+	"side_bar_width": 50.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{
