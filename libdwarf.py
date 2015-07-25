@@ -1,22 +1,91 @@
+from copy import deepcopy
 
+###   Immutable state   ###
+
+class Keys:
+    loc  = 0
+    name = 1
+    kind = 3
+    inventory = 4
+    weight = 5
+
+ALL_KINDS = {
+    'wood' : {'weight': 'light'},
+    'axe' : {'weight': 'light'},
+    'dwarf' : {'weight': 'heavy'},
+    'cliff' : {'weight': 'massive'},
+    'tree' : {'weight': 'massive'}
+}
+
+GLYPH_MAP = {
+    'dwarf':'D',#u'\u263A',
+    'dirt_tile':',',
+    'stone_tile':'.',
+    'grass':'"',
+    'cliff':'#',
+    'axe':'a',
+    'tree':'T',
+    'wood':'w'
+}
+
+SUBTYPES = {
+    'impassable': {'cliff'},
+    'creature': {'dwarf'}
+}
+
+WIDTH = 15
 
 ###   Actions   ###
 
 # Actions are 3-tuples of (precontitions, action, postconditions)
-ACTIONS = [
-    ({'actor not_at target', 'actor has_path_to target', 'actor of_kind creature'}, 
-            'actor go_to target', 
-            {'actor at target'}),
-    
-    ({'actor at target', 'target is_of_weight light'}, 
-            'actor get target', 
-            {'actor has target'}),
-    
-    ({'actor at tree', 'actor has axe'}, 
-        'actor destroy target', 
-        {'actor at wood'})
-]
 
+
+
+
+
+def create_actions_from_template():
+    action_templates = [
+        ({'actor not_at any_type', 'actor has_path_to any_type', 'actor of_kind creature'}, 
+                'actor go_to any_type', 
+                {'actor at any_type'}),
+        
+        ({'actor at any_type', 'any_type is_of_weight light'}, 
+                'actor get any_type', 
+                {'actor has any_type'}),
+        
+        ({'actor at tree', 'actor has axe'}, 
+            'actor destroy tree', 
+            {'actor at wood'})
+    ]
+    def action_includes_str(action, item):
+        for contstraint in action[0].union(action[2]):
+            if item in contstraint:
+                return True
+        if item in action[1]:
+            return True
+        return False
+
+    def get_action_with_str_replaced(action, oldstr, newstr):
+        new_action = ({},"",{})
+        for contstraint in new_action[0]:
+            contstraint.replace(oldstr,newstr)
+        contstraint[1].replace(oldstr,newstr)
+        for contstraint in new_action[2]:
+            contstraint.replace(oldstr,newstr)
+        return new_action
+
+    result = []
+    for action in action_templates:
+        if action_includes_str(action,'any_type'):
+            for kind in ALL_KINDS:
+                result.append(get_action_with_str_replaced(action,'any_type',kind))
+    return result
+
+
+ACTIONS = create_actions_from_template()
+
+for item in ACTIONS:
+    print item
 ###   Condition tests   ###
 
 def condition_met(condition, intermediary_state, actor=None, target=None):
@@ -44,9 +113,9 @@ def condition_met(condition, intermediary_state, actor=None, target=None):
 
     if verb == 'is_of_weight':
         if words[0] == 'actor':
-            return actor[Keys.weight] == words[2]
+            return get_weight(actor[Keys.kind]) == words[2]
         if words[0] == 'target':
-            return target[Keys.weight] == words[2]
+            return get_weight(target[Keys.kind]) == words[2]
 
     if verb == 'has':
         if words[0] == 'actor':
@@ -54,43 +123,6 @@ def condition_met(condition, intermediary_state, actor=None, target=None):
 
     assert 1==0
 
-
-
-
-###   Immutable state   ###
-
-class Keys:
-    loc  = 0
-    name = 1
-    kind = 3
-    inventory = 4
-    weight = 5
-
-WEIGHTS = {
-    'wood' : 'light',
-    'axe' : 'light',
-    'dwarf' : 'heavy',
-    'cliff' : 'massive',
-    'tree' : 'massive'
-}
-
-GLYPH_MAP = {
-    'dwarf':'D',#u'\u263A',
-    'dirt_tile':',',
-    'stone_tile':'.',
-    'grass':'"',
-    'cliff':'#',
-    'axe':'a',
-    'tree':'T',
-    'wood':'w'
-}
-
-SUBTYPES = {
-    'impassable': {'cliff'},
-    'creature': {'dwarf'}
-}
-
-WIDTH = 15
 
 ###   Querying Immutable Properties ###
 
@@ -138,8 +170,8 @@ def get_adjacent_tiles(p):
     return result
 
 def get_weight(kind):
-    if kind in WEIGHTS:
-        return WEIGHTS[kind]
+    if kind in ALL_KINDS:
+        return ALL_KINDS[kind]['weight']
     elif is_tile(kind):
         return 'immobile'
 
