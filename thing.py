@@ -29,12 +29,7 @@ def create_simple_world():
                     Keys.loc: (x,y)
                 })
 
-    add_obj_to_state({
-        Keys.name:'fili',
-        Keys.kind:'dwarf',
-        Keys.loc: (2,2),
-        Keys.inventory:  []
-        })
+
     add_obj_to_state({
         Keys.name:'ori',
         Keys.kind:'dwarf',
@@ -63,7 +58,18 @@ def draw_world():
                 print get_glyph(at_loc.pop()[Keys.kind]),
         print''
 
+
+fili =  {
+        Keys.name:'fili',
+        Keys.kind:'dwarf',
+        Keys.loc: (2,2),
+        Keys.inventory:  []
+        }
+
+add_obj_to_state(fili)
 create_simple_world()
 add_object_at_all('cliff',[(Keys.kind,'stone_tile')])
 
 draw_world()
+
+print condition_met('actor at tree', None, actor = fili)

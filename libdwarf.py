@@ -12,7 +12,7 @@ ACTIONS = [
             'actor get target', 
             {'actor has target'}),
     
-    ({'actor at target', 'target of_kind tree', 'actor has axe'}, 
+    ({'actor at tree', 'actor has axe'}, 
         'actor destroy target', 
         {'actor at wood'})
 ]
@@ -26,7 +26,7 @@ def condition_met(condition, intermediary_state, actor=None, target=None):
         if condition == 'actor at target':
             return actor[Keys.loc] == target[Keys.loc]
         if 'actor at' in condition:
-            return select((Keys.loc,actor[Keys.loc]), ())
+            return len(select({(Keys.loc,actor[Keys.loc]), (Keys.kind, words[2])}))>0
 
     if verb == 'not_at':
         if condition == 'actor not_at target':
@@ -37,20 +37,22 @@ def condition_met(condition, intermediary_state, actor=None, target=None):
             return get_path(actor[Keys.loc], target[Keys.loc]) != None
 
     if verb == 'of_kind':
-        if condition[0] == 'actor':
-            return is_of_kind(actor, condition[2])
-        if condition[0] == 'target':
-            return is_of_kind(target, condition[2])
+        if words[0] == 'actor':
+            return is_of_kind(actor, words[2])
+        if words[0] == 'target':
+            return is_of_kind(target, words[2])
 
     if verb == 'is_of_weight':
-        if condition[0] == 'actor':
-            return actor[Keys.weight] == condition[2]
-        if condition[0] == 'target':
-            return target[Keys.weight] == condition[2]
+        if words[0] == 'actor':
+            return actor[Keys.weight] == words[2]
+        if words[0] == 'target':
+            return target[Keys.weight] == words[2]
 
     if verb == 'has':
-        if condition[0] == 'actor':
-            return contains(actor, ('kind', condition[2]))
+        if words[0] == 'actor':
+            return contains(actor, ('kind', words[2]))
+
+    assert 1==0
 
 
 
