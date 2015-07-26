@@ -147,47 +147,6 @@ def condition_met_by_world(condition, actor=None, target=None):
     assert 1 == 0
 
 
-# def action_executable(action, conditions_met, actor, target):
-#     for precondition in action[0]:
-#         if not (condition_met_by_world(precondition, actor=actor,
-#                                        target=target)
-#                 or precondition in conditions_met):
-#             return False
-#     return True
-
-
-# def get_next_actions(conditions_met, actor, target):
-#     neighbors = []
-#     for action in ALL_ACTIONS:
-#         if action_executable(action, conditions_met,
-#                              actor, target):
-#             neighbors.append(action)
-#     return neighbors
-
-
-# def steps_to_condition(goal_condition, actions_so_far, conditions_met,
-#                        actor, target, action_taken=None):
-#     if action_taken is None:
-#         action_taken = (set([]), 'idle', set([]))
-
-#     actions_so_far = actions_so_far + [action_taken]
-
-#     if (condition_met_by_world(goal_condition, actor=actor, target=target)
-#             or goal_condition in conditions_met):
-#         return actions_so_far
-
-#     neighbors = get_next_actions(conditions_met, actor, target)
-
-#     for neighbor in neighbors:
-#         if neighbor not in actions_so_far:
-#             action_path = steps_to_condition(goal_condition, actions_so_far,
-#                                              conditions_met.union(neighbor[2]),
-#                                              actor, target, action_taken=neighbor)
-#             if action_path is not None:
-#                     return action_path
-
-#     return None
-
 def steps_to_condition(goal_condition, actions_so_far, actor, target):
     result = []
 
