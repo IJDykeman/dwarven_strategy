@@ -4,6 +4,14 @@
 		"selected_items":
 		[
 			[
+				"is",
+				"is_of_kind"
+			],
+			[
+				"if",
+				"is_of_kind"
+			],
+			[
 				"old",
 				"oldstr"
 			],
@@ -60,10 +68,6 @@
 				"condition_already_met	(statement)"
 			],
 			[
-				"is",
-				"is_condition_reachable	(function)"
-			],
-			[
 				"next",
 				"next_actions	(statement)"
 			],
@@ -99,7 +103,7 @@
 			"file": "libdwarf.py",
 			"settings":
 			{
-				"buffer_size": 10628,
+				"buffer_size": 10674,
 				"line_ending": "Unix"
 			}
 		},
@@ -135,17 +139,25 @@
 	"build_varint": "",
 	"command_palette":
 	{
-		"height": 369.0,
-		"last_filter": "rena",
+		"height": 392.0,
+		"last_filter": "ena",
 		"selected_items":
 		[
 			[
-				"rena",
-				"Python Refactor: Rename"
+				"ena",
+				"Package Control: Enable Package"
+			],
+			[
+				"disa",
+				"Package Control: Disable Package"
 			],
 			[
 				"install",
 				"Package Control: Install Package"
+			],
+			[
+				"rena",
+				"Python Refactor: Rename"
 			],
 			[
 				"re",
@@ -180,20 +192,12 @@
 				"User: Python PEP8 Autoformat"
 			],
 			[
-				"ena",
-				"Package Control: Enable Package"
-			],
-			[
 				"isntall",
 				"Package Control: Install Package"
 			],
 			[
 				"remove",
 				"Package Control: Remove Package"
-			],
-			[
-				"disa",
-				"Package Control: Disable Package"
 			],
 			[
 				"dia",
@@ -275,6 +279,8 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"###",
+			" ###",
 			"+r",
 			"get_action_with_string_replaced",
 			"get_glyph_kind",
@@ -312,15 +318,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 10628,
+						"buffer_size": 10674,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								371,
-								371
+								109,
+								109
 							]
 						],
 						"settings":
@@ -342,15 +348,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 10628,
+						"buffer_size": 10674,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								8359,
-								8359
+								937,
+								937
 							]
 						],
 						"settings":
@@ -360,7 +366,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 5041.0,
+						"translation.y": 917.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
@@ -433,7 +439,7 @@
 		"cols":
 		[
 			0.0,
-			0.73896582531,
+			0.4674702547,
 			1.0
 		],
 		"rows":
