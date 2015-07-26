@@ -39,26 +39,26 @@ WIDTH = 15
 ###   Actions   ###
 
 
-def create_actions_from_template():
+def get_all_actions():
     # Actions are 3-tuples of (precontitions, action, postconditions)
     action_templates = [
-        ({'actor not_at any_kind', 'actor has_path_to any_kind',
-          'actor of_kind creature'},
+        ({'actor of_kind creature', 'actor has_path_to any_kind'},
             'actor go_to any_kind',
-         {'actor at any_kind', 'actor has any_kind'}),
+         {'actor at any_kind'}),
 
-        ({'actor at any_kind', 'any_kind is_of_weight light'},
+        ({'any_kind is_of_weight light', 'actor at any_kind'},
          'actor get any_kind',
          {'actor has any_kind'}),
 
-        ({'actor at tree', 'actor has axe'},
+        ({'actor has axe', 'actor at tree'},
             'actor destroy tree',
             {'actor at wood'})
+
     ]
 
     def action_includes_str(action, item):
-        for contstraint in action[0].union(action[2]):
-            if item in contstraint:
+        for constraint in action[0].union(action[2]):
+            if item in constraint:
                 return True
         if item in action[1]:
             return True
@@ -70,11 +70,11 @@ def create_actions_from_template():
         any_kind replaced with each of the game's kinds
         """
         new_action = [set([]), "", set([])]
-        for contstraint in action[0]:
-            new_action[0].add(contstraint.replace(oldstr, newstr))
+        for constraint in action[0]:
+            new_action[0].add(constraint.replace(oldstr, newstr))
         new_action[1] = action[1].replace(oldstr, newstr)
-        for contstraint in action[2]:
-            new_action[2].add(contstraint.replace(oldstr, newstr))
+        for constraint in action[2]:
+            new_action[2].add(constraint.replace(oldstr, newstr))
         return tuple(new_action)
 
     result = []
@@ -83,15 +83,25 @@ def create_actions_from_template():
             for kind in ALL_KINDS:
                 result.append(get_action_with_any_kind_replaced(action,
                               'any_kind', kind))
+        else:
+            result.append(action)
     return result
 
+ALL_ACTIONS = get_all_actions()
 
-###   Condition tests   ###
+
+def action_has_result(action, constraint):
+    return constraint in action[2]
 
 
-def condition_met(condition, intermediary_state, actor=None, target=None):
+def get_all_actions_with_result(constraint):
+    return filter(lambda x: action_has_result(x, constraint), ALL_ACTIONS)
+
+
+def condition_met(condition, actor=None, target=None):
     words = condition.split(' ')
     verb = words[1]
+    assert(len(words)) == 3
     if verb == 'at':
         if condition == 'actor at target':
             assert actor != target
@@ -104,7 +114,7 @@ def condition_met(condition, intermediary_state, actor=None, target=None):
             matching_targets = filter(lambda x: x != actor, matching_targets)
             return len(matching_targets) > 0
     if verb == 'not_at':
-        return not condition_met('actor at '+words[2], intermediary_state,
+        return not condition_met('actor at '+words[2],
                                  actor=actor, target=target)
 
     if verb == 'has_path_to':
@@ -126,15 +136,56 @@ def condition_met(condition, intermediary_state, actor=None, target=None):
             return get_weight(actor[Keys.kind]) == words[2]
         if words[0] == 'target':
             return get_weight(target[Keys.kind]) == words[2]
+        else:
+            return get_weight(words[0]) == words[2]
 
     if verb == 'has':
         if words[0] == 'actor':
             return contains(actor, (Keys.kind, words[2]))
 
+    print condition
     assert 1 == 0
 
 
+def steps_to_condition(goal_condition, actions_so_far,
+                       actor=None, target=None, action_taken=None):
+    #print [action[1] for action in actions_list]
+    if action_taken is None:
+        action_taken = (set([]), 'idle', set([]))
+
+    actions_so_far = actions_so_far + [action_taken]
+
+    if condition_met(goal_condition, actor=actor, target=target):
+        # print "base case", goal_condition
+        return actions_so_far
+    # else:
+    #    print "recursive case", goal_condition
+
+    for next_action in get_all_actions_with_result(goal_condition):
+        # IF THIS ACTIONS CAN BE TAKEN
+        next_action_possible = True
+        recursive_call = []
+        for precondition in next_action[0]:
+            recursive_call = \
+                steps_to_condition(precondition,
+                                   actions_so_far,
+                                   actor=actor, target=target,
+                                   action_taken=next_action)
+            if recursive_call is None:
+                next_action_possible = False
+                break
+        if next_action_possible:
+            #print "action:", next_action[1]
+            #print "recursive_call is", \
+            #    [action[1] for action in recursive_call]
+            print next_action
+            return actions_so_far
+
+    # condition was not already met and no next actions exist
+    return None
+
 ###   Querying Immutable Properties ###
+
 
 def is_of_kind(obj, kind):
     """
@@ -200,7 +251,7 @@ state = []
 
 def select(args, obj_set=state):
     """
-    returns all items in obj_set (state by default) that meet the contstraints
+    returns all items in obj_set (state by default) that meet the constraints
     set by the set of tuples {(attribute_key, desired_value)}
     """
     result = []
@@ -252,11 +303,11 @@ def add_object_at_all(kind_to_add, criteria):
         })
 
 
-def contains(subject, contstraints):
+def contains(subject, constraints):
     """
-    returns true if any item in subject's inventory matches contstraints
+    returns true if any item in subject's inventory matches constraints
     """
-    return len(select([contstraints], obj_set=subject[Keys.inventory])) > 0
+    return len(select([constraints], obj_set=subject[Keys.inventory])) > 0
 
 ###   Algorithms   ###
 

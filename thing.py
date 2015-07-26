@@ -66,22 +66,32 @@ fili = {
 
 add_obj_to_state({
     Keys.kind: 'cliff',
-    Keys.loc: (2, 3),
+    Keys.loc: (10, 4),
 })
+
 add_obj_to_state({
     Keys.kind: 'cliff',
-    Keys.loc: (2, 1),
+    Keys.loc: (10, 6),
 })
+
 add_obj_to_state({
     Keys.kind: 'cliff',
-    Keys.loc: (1, 2),
+    Keys.loc: (9, 5),
 })
-add_obj_to_state({
-    Keys.kind: 'cliff',
-    Keys.loc: (3, 2),
-})
+
+# add_obj_to_state({
+#     Keys.kind: 'cliff',
+#     Keys.loc: (11, 5),
+# })
+
 add_obj_to_state(fili)
 create_simple_world()
 add_object_at_all('cliff', [(Keys.kind, 'stone_tile')])
 
 draw_world()
+
+actions = steps_to_condition('actor has axe', [], actor=fili)
+print "======"
+if actions is not None:
+    print "this action is possible by executing"
+    print [action[1] for action in actions]
