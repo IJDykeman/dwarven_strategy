@@ -90,7 +90,7 @@ add_object_at_all('cliff', [(Keys.kind, 'stone_tile')])
 
 draw_world()
 
-actions = steps_to_condition('actor has axe', [], actor=fili)
+actions = steps_to_condition('actor has wood', [], fili, None)
 print "======"
 if actions is not None:
     print "this action is possible by executing"

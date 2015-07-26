@@ -71,20 +71,20 @@ add_object_at_all('cliff', [(Keys.kind, 'stone_tile')])
 
 #testing has_path_to
 
-assert not condition_met('actor has_path_to tree',
+assert not condition_met_by_world('actor has_path_to tree',
                          None, actor=select([(Keys.name, 'fili')])[0])
 
-assert condition_met('actor has_path_to tree',
+assert condition_met_by_world('actor has_path_to tree',
                      None, actor=select([(Keys.name, 'ori')])[0])
 
-assert condition_met('actor has_path_to axe',
+assert condition_met_by_world('actor has_path_to axe',
                      None, actor=select([(Keys.name, 'ori')])[0])
 
-assert not condition_met('actor has_path_to target',
+assert not condition_met_by_world('actor has_path_to target',
                          None, actor=select([(Keys.name, 'ori')])[0],
                          target=select([(Keys.name, 'fili')])[0])
 
-assert not condition_met('actor has_path_to target',
+assert not condition_met_by_world('actor has_path_to target',
                          None, actor=select([(Keys.name, 'ori')])[0],
                          target=select([(Keys.name, 'fili')])[0])
 
@@ -93,22 +93,22 @@ ori = select([(Keys.name, 'ori')])[0]
 
 # testing of_kind
 
-assert condition_met('actor of_kind creature',
+assert condition_met_by_world('actor of_kind creature',
                      None, actor=ori)
 
-assert condition_met('actor of_kind dwarf',
+assert condition_met_by_world('actor of_kind dwarf',
                      None, actor=ori)
 
-assert not condition_met('actor of_kind axe',
+assert not condition_met_by_world('actor of_kind axe',
                          None, actor=fili)
 
-assert not condition_met('actor of_kind axe',
+assert not condition_met_by_world('actor of_kind axe',
                          None, actor=select([(Keys.kind, 'tree')])[0])
 
-assert not condition_met('actor of_kind axe',
+assert not condition_met_by_world('actor of_kind axe',
                          None, actor=select([(Keys.kind, 'tree')])[0])
 
-assert condition_met('actor of_kind tree',
+assert condition_met_by_world('actor of_kind tree',
                      None, actor=select([(Keys.kind, 'tree')])[0])
 
 axe = {Keys.kind: 'axe'}
@@ -122,44 +122,44 @@ balin = {
 
 add_obj_to_state(balin)
 # testing at
-assert condition_met('actor at axe',
+assert condition_met_by_world('actor at axe',
                      None, actor=balin)
 
-assert not condition_met('actor at tree',
+assert not condition_met_by_world('actor at tree',
                          None, actor=balin)
 
-assert not condition_met('actor at dwarf',
+assert not condition_met_by_world('actor at dwarf',
                          None, actor=balin)
 
 # testing not_at
 
-assert condition_met('actor not_at dwarf',
+assert condition_met_by_world('actor not_at dwarf',
                      None, actor=balin)
 
-assert condition_met('actor not_at tree',
+assert condition_met_by_world('actor not_at tree',
                      None, actor=balin)
 
 # testing has
 
-assert condition_met('actor has axe',
+assert condition_met_by_world('actor has axe',
                      None, actor=balin)
 
-assert not condition_met('actor has tree',
+assert not condition_met_by_world('actor has tree',
                          None, actor=balin)
 
 # testing of_weight
 
-assert condition_met('actor is_of_weight heavy',
+assert condition_met_by_world('actor is_of_weight heavy',
                      None, actor=balin)
 
-assert not condition_met('actor is_of_weight light',
+assert not condition_met_by_world('actor is_of_weight light',
                          None, actor=balin)
 
-assert condition_met('target is_of_weight light',
+assert condition_met_by_world('target is_of_weight light',
                      None, actor=balin, target=axe)
 
-assert condition_met('actor is_of_weight heavy',
+assert condition_met_by_world('actor is_of_weight heavy',
                      None, actor=balin, target=axe)
 
-assert not condition_met('actor is_of_weight light',
+assert not condition_met_by_world('actor is_of_weight light',
                          None, actor=balin, target=axe)

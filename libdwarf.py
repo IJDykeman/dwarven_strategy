@@ -98,7 +98,7 @@ def get_all_actions_with_result(constraint):
     return filter(lambda x: action_has_result(x, constraint), ALL_ACTIONS)
 
 
-def condition_met(condition, actor=None, target=None):
+def condition_met_by_world(condition, actor=None, target=None):
     words = condition.split(' ')
     verb = words[1]
     assert(len(words)) == 3
@@ -114,8 +114,8 @@ def condition_met(condition, actor=None, target=None):
             matching_targets = filter(lambda x: x != actor, matching_targets)
             return len(matching_targets) > 0
     if verb == 'not_at':
-        return not condition_met('actor at '+words[2],
-                                 actor=actor, target=target)
+        return not condition_met_by_world('actor at '+words[2],
+                                          actor=actor, target=target)
 
     if verb == 'has_path_to':
         if condition == 'actor has_path_to target':
@@ -147,42 +147,32 @@ def condition_met(condition, actor=None, target=None):
     assert 1 == 0
 
 
-def steps_to_condition(goal_condition, actions_so_far,
-                       actor=None, target=None, action_taken=None):
-    #print [action[1] for action in actions_list]
-    if action_taken is None:
-        action_taken = (set([]), 'idle', set([]))
+def steps_to_condition(goal_condition, actions_so_far, actor, target):
+    result = []
 
-    actions_so_far = actions_so_far + [action_taken]
+    def do_the_yeah(goal_condition, actions_so_far, actor, target):
 
-    if condition_met(goal_condition, actor=actor, target=target):
-        # print "base case", goal_condition
-        return actions_so_far
-    # else:
-    #    print "recursive case", goal_condition
-
-    for next_action in get_all_actions_with_result(goal_condition):
-        # IF THIS ACTIONS CAN BE TAKEN
-        next_action_possible = True
-        recursive_call = []
-        for precondition in next_action[0]:
-            recursive_call = \
-                steps_to_condition(precondition,
-                                   actions_so_far,
-                                   actor=actor, target=target,
-                                   action_taken=next_action)
-            if recursive_call is None:
-                next_action_possible = False
-                break
-        if next_action_possible:
-            #print "action:", next_action[1]
-            #print "recursive_call is", \
-            #    [action[1] for action in recursive_call]
-            print next_action
+        if condition_met_by_world(goal_condition, actor=actor, target=target):
             return actions_so_far
+        for next_action in get_all_actions_with_result(goal_condition):
+            next_action_possible = True
+            recursive_call = []
+            for precondition in next_action[0]:
+                recursive_call = \
+                    do_the_yeah(precondition, actions_so_far, actor, target)
+                if recursive_call is None:
+                    next_action_possible = False
+                    break
+            if next_action_possible:
+                result.append(next_action)
+                return actions_so_far
 
-    # condition was not already met and no next actions exist
-    return None
+        # condition was not already met and no next actions exist
+        return None
+
+    do_the_yeah(goal_condition, actions_so_far,
+                actor, target)
+    return result
 
 ###   Querying Immutable Properties ###
 
