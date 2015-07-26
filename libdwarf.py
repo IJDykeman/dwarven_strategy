@@ -1,5 +1,5 @@
 
-###   Immutable state   ###
+#   Immutable state   #
 
 
 class Keys:
@@ -38,7 +38,7 @@ SUBTYPES = {
 WIDTH = 15
 
 
-###   Actions   ###
+#   Actions   #
 
 
 def get_all_actions():
@@ -110,7 +110,7 @@ def condition_met_by_world(condition, actor=None, target=None):
             return actor[Keys.loc] == target[Keys.loc]
         if 'actor at' in condition:
             matching_targets = select({(Keys.loc, actor[Keys.loc]),
-                                     (Keys.kind, words[2])})
+                                       (Keys.kind, words[2])})
             # Take only the targets that are not the actor.  Actor cannot be
             # 'at' itself
             matching_targets = filter(lambda x: x != actor, matching_targets)
@@ -154,8 +154,7 @@ def condition_met_by_world(condition, actor=None, target=None):
 def get_steps_to_condition(goal_condition, actions_so_far, actor, target):
     result = []
 
-    def do_the_yeah(goal_condition, actions_so_far, actor, target):
-
+    def add_steps_to_result(goal_condition, actions_so_far, actor, target):
         if condition_met_by_world(goal_condition, actor=actor, target=target):
             return actions_so_far
         for next_action in get_all_actions_with_result(goal_condition):
@@ -163,7 +162,8 @@ def get_steps_to_condition(goal_condition, actions_so_far, actor, target):
             recursive_call = []
             for precondition in next_action[0]:
                 recursive_call = \
-                    do_the_yeah(precondition, actions_so_far, actor, target)
+                    add_steps_to_result(precondition, actions_so_far,
+                                        actor, target)
                 if recursive_call is None:
                     next_action_possible = False
                     break
@@ -174,17 +174,17 @@ def get_steps_to_condition(goal_condition, actions_so_far, actor, target):
         # condition was not already met and no next actions exist
         return None
 
-    do_the_yeah(goal_condition, actions_so_far,
-                actor, target)
+    add_steps_to_result(goal_condition, actions_so_far,
+                        actor, target)
     return result
 
 
-###   Querying Immutable Properties ###
+#   Querying Immutable Properties   #
 
 
 def is_of_kind(obj, kind):
     """
-    True iff obj is of kind.  
+    True iff obj is of kind.
     NB Checks also to see if obj's kind is a sub-kind of argument kind.
     """
     if obj[Keys.kind] == kind:
@@ -241,11 +241,11 @@ def get_weight(kind):
     elif is_tile(kind):
         return 'immobile'
 
-###   Declare Mutable World State ###
+#   Declare Mutable World State #
 
 state = []
 
-###   Querying Mutable World State   ###
+#   Querying Mutable World State   #
 
 
 def select(args, obj_set=state):
@@ -290,7 +290,7 @@ def get_all_passable_from(loc, obj_set=state):
     return result
 
 
-###   Mutating World State   ###
+#   Mutating World State   #
 
 
 def add_obj_to_state(properties, obj_set=state):
@@ -301,13 +301,26 @@ def add_obj_to_state(properties, obj_set=state):
     if not Keys.inventory in properties:
         properties[Keys.inventory] = []
     assert Keys.kind in properties
-    if is_of_kind('creature', properties[Keys.kind]):
+    if is_of_kind(properties, 'creature'):
         if not Keys.goal in properties:
-            properties[Keys.plan] = None
+            properties[Keys.goal] = None
         if not Keys.plan in properties:
             properties[Keys.plan] = []
     properties[Keys.weight] = get_weight(properties[Keys.kind])
     obj_set.append(properties)
+
+
+def put_obj_in_actors_inventory(obj, actor):
+    assert obj in state
+    state.remove(obj)
+    actor[Keys.inventory].append(obj)
+
+
+def destroy(obj):
+    state.remove(obj)
+    for drop in obj[Keys.inventory]:
+        drop[Keys.loc] = obj[Keys.loc]
+        add_obj_to_state(drop)
 
 
 def add_object_at_all(kind_to_add, criteria):
@@ -327,7 +340,7 @@ def contains(subject, constraints):
     return len(select([constraints], obj_set=subject[Keys.inventory])) > 0
 
 
-###   Path Finding   ###
+#   Path Finding   #
 
 
 import heapq
