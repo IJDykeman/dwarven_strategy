@@ -72,21 +72,21 @@ add_object_at_all('cliff', [(Keys.kind, 'stone_tile')])
 #testing has_path_to
 
 assert not condition_met_by_world('actor has_path_to tree',
-                         None, actor=select([(Keys.name, 'fili')])[0])
+                                  None, actor=select([(Keys.name, 'fili')])[0])
 
 assert condition_met_by_world('actor has_path_to tree',
-                     None, actor=select([(Keys.name, 'ori')])[0])
+                              None, actor=select([(Keys.name, 'ori')])[0])
 
 assert condition_met_by_world('actor has_path_to axe',
-                     None, actor=select([(Keys.name, 'ori')])[0])
+                              None, actor=select([(Keys.name, 'ori')])[0])
 
 assert not condition_met_by_world('actor has_path_to target',
-                         None, actor=select([(Keys.name, 'ori')])[0],
-                         target=select([(Keys.name, 'fili')])[0])
+                                  None, actor=select([(Keys.name, 'ori')])[0],
+                                  target=select([(Keys.name, 'fili')])[0])
 
 assert not condition_met_by_world('actor has_path_to target',
-                         None, actor=select([(Keys.name, 'ori')])[0],
-                         target=select([(Keys.name, 'fili')])[0])
+                                  None, actor=select([(Keys.name, 'ori')])[0],
+                                  target=select([(Keys.name, 'fili')])[0])
 
 fili = select([(Keys.name, 'fili')])[0]
 ori = select([(Keys.name, 'ori')])[0]
@@ -94,22 +94,22 @@ ori = select([(Keys.name, 'ori')])[0]
 # testing of_kind
 
 assert condition_met_by_world('actor of_kind creature',
-                     None, actor=ori)
+                              None, actor=ori)
 
 assert condition_met_by_world('actor of_kind dwarf',
-                     None, actor=ori)
+                              None, actor=ori)
 
 assert not condition_met_by_world('actor of_kind axe',
-                         None, actor=fili)
+                                  None, actor=fili)
 
 assert not condition_met_by_world('actor of_kind axe',
-                         None, actor=select([(Keys.kind, 'tree')])[0])
+                                  one, actor=select([(Keys.kind, 'tree')])[0])
 
 assert not condition_met_by_world('actor of_kind axe',
-                         None, actor=select([(Keys.kind, 'tree')])[0])
+                                  None, actor=select([(Keys.kind, 'tree')])[0])
 
 assert condition_met_by_world('actor of_kind tree',
-                     None, actor=select([(Keys.kind, 'tree')])[0])
+                              None, actor=select([(Keys.kind, 'tree')])[0])
 
 axe = {Keys.kind: 'axe'}
 

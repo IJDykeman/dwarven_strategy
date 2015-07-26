@@ -3,6 +3,94 @@
 	{
 		"selected_items":
 		[
+			[
+				"old",
+				"oldstr"
+			],
+			[
+				"is_",
+				"is_of_kind	(function)"
+			],
+			[
+				"new",
+				"new_action"
+			],
+			[
+				"aciton",
+				"actions_so_far	(statement)"
+			],
+			[
+				"action",
+				"actions_so_far	(param)"
+			],
+			[
+				"con",
+				"conditions_met	(param)"
+			],
+			[
+				"get",
+				"get_next_actions	(function)"
+			],
+			[
+				"cond",
+				"condition_met_by_world	(function)"
+			],
+			[
+				"ac",
+				"actions_so_far	(param)"
+			],
+			[
+				"act",
+				"action_taken	(param)"
+			],
+			[
+				"nex",
+				"next_action_possible	(statement)"
+			],
+			[
+				"ne",
+				"next_action	(forflow)"
+			],
+			[
+				"acti",
+				"action_possible	(statement)"
+			],
+			[
+				"condi",
+				"condition_already_met	(statement)"
+			],
+			[
+				"is",
+				"is_condition_reachable	(function)"
+			],
+			[
+				"next",
+				"next_actions	(statement)"
+			],
+			[
+				"inter",
+				"intermediary_state	(param)"
+			],
+			[
+				"obj",
+				"obj_set	(param)"
+			],
+			[
+				"ma",
+				"matching_targets	(statement)"
+			],
+			[
+				"fil",
+				"filter	(function)"
+			],
+			[
+				"path",
+				"get_path"
+			],
+			[
+				"pat",
+				"has_path_to"
+			]
 		]
 	},
 	"buffers":
@@ -11,7 +99,7 @@
 			"file": "libdwarf.py",
 			"settings":
 			{
-				"buffer_size": 7822,
+				"buffer_size": 10628,
 				"line_ending": "Unix"
 			}
 		},
@@ -19,15 +107,7 @@
 			"file": "thing.py",
 			"settings":
 			{
-				"buffer_size": 1665,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "sublime_dwarves.sublime-project",
-			"settings":
-			{
-				"buffer_size": 115,
+				"buffer_size": 2068,
 				"line_ending": "Unix"
 			}
 		}
@@ -55,21 +135,61 @@
 	"build_varint": "",
 	"command_palette":
 	{
-		"height": 392.0,
-		"last_filter": "ena",
+		"height": 369.0,
+		"last_filter": "rena",
 		"selected_items":
 		[
+			[
+				"rena",
+				"Python Refactor: Rename"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"re",
+				"Python Refactor: Rename"
+			],
+			[
+				"ren",
+				"Python Refactor: Rename"
+			],
+			[
+				"pep8",
+				"User: Python PEP8 Autoformat"
+			],
+			[
+				"rename",
+				"Python Refactor: Rename"
+			],
+			[
+				"extra",
+				"Python Refactor: Extract Method"
+			],
+			[
+				"renam",
+				"Python Refactor: Rename"
+			],
+			[
+				"folf",
+				"Code Folding: Fold Tag Attributes"
+			],
+			[
+				"forma",
+				"User: Python PEP8 Autoformat"
+			],
 			[
 				"ena",
 				"Package Control: Enable Package"
 			],
 			[
-				"remove",
-				"Package Control: Remove Package"
+				"isntall",
+				"Package Control: Install Package"
 			],
 			[
-				"install",
-				"Package Control: Install Package"
+				"remove",
+				"Package Control: Remove Package"
 			],
 			[
 				"disa",
@@ -103,6 +223,7 @@
 		"height": 139.0,
 		"history":
 		[
+			"sublime.log_commands(True)",
 			"import urllib.request,os,hashlib; h = 'eb2297e1a458f27d836c04bb0cbaf282' + 'd0e7a3098092775ccb37ca9d6b2e4b7d'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
 		]
 	},
@@ -121,13 +242,21 @@
 	],
 	"file_history":
 	[
+		"/home/isaac/Desktop/dwarf_game/tests.py",
+		"/home/isaac/.config/sublime-text-3/Packages/SublimePythonIDE/SublimePython.sublime-settings",
+		"/home/isaac/.config/sublime-text-3/Packages/User/Default (Linux).sublime-keymap",
+		"/home/isaac/.config/sublime-text-3/Packages/Default/Default (Linux).sublime-keymap",
+		"/home/isaac/.config/sublime-text-3/Packages/User/Package Control.sublime-settings",
+		"/home/isaac/Desktop/dwarf_game/path_finding.py",
+		"/home/isaac/Desktop/dwarf_game/sublime_dwarves.sublime-project",
+		"/home/isaac/Desktop/dwarf_game/thing.py",
+		"/home/isaac/Desktop/dwarf_game/libdwarf.py",
 		"/home/isaac/.config/sublime-text-3/Packages/Default/Preferences.sublime-settings",
 		"/home/isaac/Desktop/dwarf_game/.ropeproject/config.py",
 		"/home/isaac/Desktop/dwarf_game/algorithms.pyc",
 		"/home/isaac/Desktop/dwarf_game/rules.pyc",
 		"/home/isaac/Desktop/dwarf_game/thing.pyc",
 		"/usr/lib/python2.7/heapq.py",
-		"/home/isaac/Desktop/dwarf_game/thing.py",
 		"/home/isaac/.config/sublime-text-3/Packages/User/Preferences.sublime-settings"
 	],
 	"find":
@@ -146,6 +275,15 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"+r",
+			"get_action_with_string_replaced",
+			"get_glyph_kind",
+			"intermediary_state",
+			"actor",
+			"contstraint",
+			"get_all_actions",
+			"any_type",
+			"kindly",
 			"python"
 		],
 		"highlight": true,
@@ -154,6 +292,7 @@
 		"regex": false,
 		"replace_history":
 		[
+			"+r"
 		],
 		"reverse": false,
 		"show_context": true,
@@ -164,7 +303,7 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 1,
 			"sheets":
 			[
 				{
@@ -173,26 +312,55 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 7822,
+						"buffer_size": 10628,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								4296,
-								4304
+								371,
+								371
 							]
 						],
 						"settings":
 						{
-							"pep8": false,
 							"syntax": "Packages/Python/Python.tmLanguage",
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 2535.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 0,
+					"file": "libdwarf.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 10628,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								8359,
+								8359
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 5041.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
@@ -201,7 +369,7 @@
 			]
 		},
 		{
-			"selected": 1,
+			"selected": 0,
 			"sheets":
 			[
 				{
@@ -210,57 +378,28 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1665,
+						"buffer_size": 2068,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								352,
-								352
+								2068,
+								2068
 							]
 						],
 						"settings":
 						{
-							"pep8": true,
 							"syntax": "Packages/Python/Python.tmLanguage",
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 1439.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "sublime_dwarves.sublime-project",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 115,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								105,
-								105
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JSON.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
 					"type": "text"
 				}
 			]
@@ -268,7 +407,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 25.0
+		"height": 26.0
 	},
 	"input":
 	{
@@ -294,7 +433,7 @@
 		"cols":
 		[
 			0.0,
-			0.5,
+			0.73896582531,
 			1.0
 		],
 		"rows":
@@ -306,7 +445,7 @@
 	"menu_visible": true,
 	"output.exec":
 	{
-		"height": 183.0
+		"height": 205.0
 	},
 	"output.find_results":
 	{
@@ -316,7 +455,7 @@
 	"project": "sublime_dwarves.sublime-project",
 	"replace":
 	{
-		"height": 46.0
+		"height": 48.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -354,7 +493,7 @@
 	"show_open_files": false,
 	"show_tabs": true,
 	"side_bar_visible": false,
-	"side_bar_width": 50.0,
+	"side_bar_width": 304.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{

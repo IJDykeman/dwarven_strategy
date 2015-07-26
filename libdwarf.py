@@ -8,6 +8,8 @@ class Keys:
     kind = 3
     inventory = 4
     weight = 5
+    goal = 6
+    plan = 7
 
 ALL_KINDS = {
     'wood': {'weight': 'light'},
@@ -46,14 +48,13 @@ def get_all_actions():
             'actor go_to any_kind',
          {'actor at any_kind'}),
 
-        ({'any_kind is_of_weight light', 'actor at any_kind'},
-         'actor get any_kind',
-         {'actor has any_kind'}),
-
         ({'actor has axe', 'actor at tree'},
             'actor destroy tree',
-            {'actor at wood'})
+            {'actor at wood'}),
 
+        ({'any_kind is_of_weight light', 'actor at any_kind'},
+         'actor get any_kind',
+         {'actor has any_kind'})
     ]
 
     def action_includes_str(action, item):
@@ -64,10 +65,10 @@ def get_all_actions():
             return True
         return False
 
-    def get_action_with_any_kind_replaced(action, oldstr, newstr):
+    def get_action_with_string_replaced(action, oldstr, newstr):
         """
         gets list of new actions where each action is the old action with
-        any_kind replaced with each of the game's kinds
+        oldstr replaced with each of the game's kinds
         """
         new_action = [set([]), "", set([])]
         for constraint in action[0]:
@@ -81,8 +82,8 @@ def get_all_actions():
     for action in action_templates:
         if action_includes_str(action, 'any_kind'):
             for kind in ALL_KINDS:
-                result.append(get_action_with_any_kind_replaced(action,
-                              'any_kind', kind))
+                result.append(get_action_with_string_replaced(action,
+                                                              'any_kind', kind))
         else:
             result.append(action)
     return result
@@ -102,6 +103,7 @@ def condition_met_by_world(condition, actor=None, target=None):
     words = condition.split(' ')
     verb = words[1]
     assert(len(words)) == 3
+
     if verb == 'at':
         if condition == 'actor at target':
             assert actor != target
@@ -109,10 +111,11 @@ def condition_met_by_world(condition, actor=None, target=None):
         if 'actor at' in condition:
             matching_targets = select({(Keys.loc, actor[Keys.loc]),
                                      (Keys.kind, words[2])})
-            # take only the targets that are not the actor.  Actor cannot be
+            # Take only the targets that are not the actor.  Actor cannot be
             # 'at' itself
             matching_targets = filter(lambda x: x != actor, matching_targets)
             return len(matching_targets) > 0
+
     if verb == 'not_at':
         return not condition_met_by_world('actor at '+words[2],
                                           actor=actor, target=target)
@@ -125,6 +128,7 @@ def condition_met_by_world(condition, actor=None, target=None):
                 if get_path(item[Keys.loc], actor[Keys.loc]) is not None:
                     return True
             return False
+
     if verb == 'of_kind':
         if words[0] == 'actor':
             return is_of_kind(actor, words[2])
@@ -147,7 +151,7 @@ def condition_met_by_world(condition, actor=None, target=None):
     assert 1 == 0
 
 
-def steps_to_condition(goal_condition, actions_so_far, actor, target):
+def get_steps_to_condition(goal_condition, actions_so_far, actor, target):
     result = []
 
     def do_the_yeah(goal_condition, actions_so_far, actor, target):
@@ -174,12 +178,14 @@ def steps_to_condition(goal_condition, actions_so_far, actor, target):
                 actor, target)
     return result
 
+
 ###   Querying Immutable Properties ###
 
 
 def is_of_kind(obj, kind):
     """
-    True iff obj is of kind
+    True iff obj is of kind.  
+    NB Checks also to see if obj's kind is a sub-kind of argument kind.
     """
     if obj[Keys.kind] == kind:
         return True
@@ -208,12 +214,12 @@ def is_tile(obj):
     return 'tile' in obj[Keys.kind].split('_')
 
 
-def in_world(loc):
-    return 0 <= loc[0] < WIDTH and 0 <= loc[1] < WIDTH
-
-
 def is_not_tile(obj):
     return not is_tile(obj)
+
+
+def in_world(loc):
+    return 0 <= loc[0] < WIDTH and 0 <= loc[1] < WIDTH
 
 
 def get_adjacent_tiles(p):
@@ -227,12 +233,15 @@ def get_adjacent_tiles(p):
 
 
 def get_weight(kind):
+    """
+    Returns weight of kind
+    """
     if kind in ALL_KINDS:
         return ALL_KINDS[kind]['weight']
     elif is_tile(kind):
         return 'immobile'
 
-###   Mutable World State ###
+###   Declare Mutable World State ###
 
 state = []
 
@@ -248,6 +257,9 @@ def select(args, obj_set=state):
     for item in obj_set:
         item_meets_criteria = True
         for key, val in args:
+            # This could perhaps be improved by making some kind of high-order
+            # mapping between Keys and tests to see whether an object's
+            # attribute at that key matches the query
             if key == Keys.kind:
                 item_meets_criteria &= is_of_kind(item, val)
             else:
@@ -260,26 +272,41 @@ def select(args, obj_set=state):
 
 
 def is_loc_passable(loc, obj_set=state):
+    """
+    Returns true is a creature can walk at loc
+    """
     return all([not is_of_kind(obj, 'impassable')
                 for obj in select([(Keys.loc, loc)])])
 
 
-def passable_from(p, obj_set=state):
+def get_all_passable_from(loc, obj_set=state):
+    """
+    Returns a list of all tiles which can be stepped to from p.
+    """
     result = []
-    for loc in get_adjacent_tiles(p):
+    for loc in get_adjacent_tiles(loc):
         if is_loc_passable(loc, obj_set=obj_set):
             result.append(loc)
     return result
+
 
 ###   Mutating World State   ###
 
 
 def add_obj_to_state(properties, obj_set=state):
+    """
+    Adds given dict as object to state, setting absent required keys where
+    necesarry.
+    """
     if not Keys.inventory in properties:
         properties[Keys.inventory] = []
     assert Keys.kind in properties
+    if is_of_kind('creature', properties[Keys.kind]):
+        if not Keys.goal in properties:
+            properties[Keys.plan] = None
+        if not Keys.plan in properties:
+            properties[Keys.plan] = []
     properties[Keys.weight] = get_weight(properties[Keys.kind])
-    #kind = properties[Keys.kind]
     obj_set.append(properties)
 
 
@@ -299,7 +326,9 @@ def contains(subject, constraints):
     """
     return len(select([constraints], obj_set=subject[Keys.inventory])) > 0
 
-###   Algorithms   ###
+
+###   Path Finding   ###
+
 
 import heapq
 
@@ -348,7 +377,7 @@ def get_path(start, goal):
         current = frontier.get()
         if current == goal:
             break
-        for next in passable_from(current):
+        for next in get_all_passable_from(current):
             new_cost = cost_so_far[current] + move_cost(current, next)
             if next not in cost_so_far or new_cost < cost_so_far[next]:
                 cost_so_far[next] = new_cost
