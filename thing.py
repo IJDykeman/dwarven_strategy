@@ -58,52 +58,6 @@ def draw_world():
         print''
 
 
-fili = {
-    Keys.name: 'fili',
-    Keys.kind: 'dwarf',
-    Keys.loc: (2, 2),
-    Keys.inventory:  []
-}
-
-add_obj_to_state({
-    Keys.name: 'ori',
-    Keys.kind: 'dwarf',
-    Keys.loc: (2, 6),
-})
-
-add_obj_to_state({
-    Keys.kind: 'cliff',
-    Keys.loc: (10, 4),
-})
-
-add_obj_to_state({
-    Keys.kind: 'cliff',
-    Keys.loc: (10, 6),
-})
-
-add_obj_to_state({
-    Keys.kind: 'cliff',
-    Keys.loc: (9, 5),
-})
-
-# add_obj_to_state({
-#     Keys.kind: 'cliff',
-#     Keys.loc: (11, 5),
-# })
-
-add_obj_to_state(fili)
-create_simple_world()
-add_object_at_all('cliff', [(Keys.kind, 'stone_tile')])
-
-draw_world()
-
-actions = get_steps_to_condition('actor has wood', [], fili, None)
-if actions is not None:
-    print [action[1] for action in actions]
-
-fili[Keys.goal] = 'actor has wood'
-
-
 def plan_for_goal(creature):
     steps = get_steps_to_condition(creature[Keys.goal], [], creature, None)
     plan = []
@@ -129,9 +83,11 @@ def actor_failed(actor):
 
 
 def execute(actor, step):
+    printouts = []
     words = step.split(' ')
     verb = words[1]
     if verb == 'go_to':
+        # Get a list of objects that the agent could go to
         potential_goals = select([(Keys.kind, words[2])])
         X = actor[Keys.loc]
         # prefer closer goals of the correct type
@@ -161,6 +117,7 @@ def execute(actor, step):
             put_obj_in_actors_inventory(targets[0], actor)
         else:
             actor_failed(actor)
+        printouts.append(actor[Keys.name] + " picks up " + targets[0][Keys.kind])
 
     elif verb == 'destroy':
         targets = select([(Keys.loc, actor[Keys.loc]), (Keys.kind, words[2])])
@@ -176,14 +133,69 @@ def execute(actor, step):
     else:
         print words
         raise ValueError('Verb '+verb+' not handled')
+    return printouts
 
 
-while True:
-    for creature in select([(Keys.kind, 'creature')]):
-        if creature[Keys.goal] is not None and len(creature[Keys.plan]) == 0:
-            creature[Keys.plan] = plan_for_goal(creature)
-        elif len(creature[Keys.plan]) > 0:
-            execute(creature, creature[Keys.plan].pop(0))
-    cls()
-    draw_world()
-    sleep(.2)
+
+
+def setup_world():
+    fili = {
+        Keys.name: 'fili',
+        Keys.kind: 'dwarf',
+        Keys.loc: (2, 2),
+        Keys.inventory:  []
+    }
+
+    add_obj_to_state({
+        Keys.name: 'ori',
+        Keys.kind: 'dwarf',
+        Keys.loc: (2, 6),
+    })
+
+    add_obj_to_state({
+        Keys.kind: 'cliff',
+        Keys.loc: (10, 4),
+    })
+
+    add_obj_to_state({
+        Keys.kind: 'cliff',
+        Keys.loc: (10, 6),
+    })
+
+    add_obj_to_state({
+        Keys.kind: 'cliff',
+        Keys.loc: (9, 5),
+    })
+
+    # add_obj_to_state({
+    #     Keys.kind: 'cliff',
+    #     Keys.loc: (11, 5),
+    # })
+    add_obj_to_state(fili)
+    create_simple_world()
+    add_object_at_all('cliff', [(Keys.kind, 'stone_tile')])
+
+    actions = get_steps_to_condition('actor has wood', [], fili, None)
+    if actions is not None:
+        print [action[1] for action in actions]
+
+    fili[Keys.goal] = 'actor has wood'
+
+def play():
+    while True:
+        printout = []
+
+        for creature in select([(Keys.kind, 'creature')]):
+            if creature[Keys.goal] is not None and len(creature[Keys.plan]) == 0:
+                creature[Keys.plan] = plan_for_goal(creature)
+            elif len(creature[Keys.plan]) > 0:
+                printout += execute(creature, creature[Keys.plan].pop(0))
+        cls()
+        draw_world()
+        for item in printout:
+            print item
+        input = raw_input(">")
+        #sleep(.2)
+
+setup_world()
+play()
