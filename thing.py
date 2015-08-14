@@ -2,8 +2,8 @@ from libdwarf import *
 from time import sleep
 import os
 
-def cls():
-    os.system(['clear','cls'][os.name == 'nt'])
+#def cls():
+#    os.system(['clear','cls'][os.name == 'nt'])
 
 
 def create_simple_world():
@@ -190,7 +190,7 @@ def play():
                 creature[Keys.plan] = plan_for_goal(creature)
             elif len(creature[Keys.plan]) > 0:
                 printout += execute(creature, creature[Keys.plan].pop(0))
-        cls()
+        #cls()
         draw_world()
         for item in printout:
             print item
