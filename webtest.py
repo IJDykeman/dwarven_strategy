@@ -1,6 +1,6 @@
 
 #   Immutable state   #
-
+from time import sleep
 
 class Keys:
     loc = 0
@@ -586,7 +586,9 @@ def play():
         printout = []
 
         for creature in select([(Keys.kind, 'creature')]):
-            if creature[Keys.goal] is not None and len(creature[Keys.plan]) == 0:
+            print "do a creature"
+            if (creature[Keys.goal] is not None
+                and len(creature[Keys.plan]) == 0):
                 creature[Keys.plan] = plan_for_goal(creature)
             elif len(creature[Keys.plan]) > 0:
                 printout += execute(creature, creature[Keys.plan].pop(0))
@@ -594,8 +596,8 @@ def play():
         draw_world()
         for item in printout:
             print item
-        input = raw_input(">")
-        #sleep(.2)
+        #input = raw_input(">")
+        sleep(.2)
 
 setup_world()
 play()
