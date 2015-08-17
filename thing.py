@@ -2,8 +2,6 @@ from libdwarf import *
 from time import sleep
 import os
 
-#def cls():
-#    os.system(['clear','cls'][os.name == 'nt'])
 
 
 def create_simple_world():
@@ -47,6 +45,7 @@ def create_simple_world():
 
 
 def draw_world():
+    print '\n' * 100
     for x in range(WIDTH):
         for y in range(WIDTH):
             at_loc = select([(Keys.loc, (x, y))])
@@ -62,7 +61,7 @@ def plan_for_goal(creature):
     steps = get_steps_to_condition(creature[Keys.goal], [], creature, None)
     plan = []
     for step in steps:
-        words = step[1].split(' ')
+        words = step[1]
         verb = words[1]
 
         if verb == 'go_to':
@@ -73,7 +72,7 @@ def plan_for_goal(creature):
             plan.append(step[1])
         else:
             assert 1 == 0  # verb not recongnized
-    plan.append('actor has_completed_goal')
+    plan.append(('actor', 'has_completed_goal'))
 
     return plan
 
@@ -84,8 +83,9 @@ def actor_failed(actor):
 
 def execute(actor, step):
     printouts = []
-    words = step.split(' ')
+    words = step
     verb = words[1]
+    obj = words[2]
     if verb == 'go_to':
         # Get a list of objects that the agent could go to
         potential_goals = select([(Keys.kind, words[2])])
@@ -98,10 +98,10 @@ def execute(actor, step):
             path = get_path(actor[Keys.loc], item[Keys.loc])
             if path is not None:
                 for step in path:
-                    path_steps.append('actor step_to '+str(step))
+                    path_steps.append(('actor', 'step_to', str(step)))
         actor[Keys.plan] = path_steps + actor[Keys.plan]
     elif verb == 'step_to':
-        target = step.split("(")[1]
+        target = obj.split("(")[1]
         target = target.replace("(", "")
         target = target.replace(")", "")
         target = target.split(', ')
@@ -157,29 +157,15 @@ def setup_world():
         Keys.loc: (10, 4),
     })
 
-    add_obj_to_state({
-        Keys.kind: 'cliff',
-        Keys.loc: (10, 6),
-    })
-
-    add_obj_to_state({
-        Keys.kind: 'cliff',
-        Keys.loc: (9, 5),
-    })
-
-    # add_obj_to_state({
-    #     Keys.kind: 'cliff',
-    #     Keys.loc: (11, 5),
-    # })
     add_obj_to_state(fili)
     create_simple_world()
     add_object_at_all('cliff', [(Keys.kind, 'stone_tile')])
 
-    actions = get_steps_to_condition('actor has wood', [], fili, None)
-    if actions is not None:
-        print [action[1] for action in actions]
+    #actions = get_steps_to_condition('actor has wood', [], fili, None)
+    #if actions is not None:
+    #    print [action[1] for action in actions]
 
-    fili[Keys.goal] = 'actor has wood'
+    fili[Keys.goal] = ('actor', 'has', 'wood')
 
 def play():
     while True:
@@ -188,14 +174,16 @@ def play():
         for creature in select([(Keys.kind, 'creature')]):
             if creature[Keys.goal] is not None and len(creature[Keys.plan]) == 0:
                 creature[Keys.plan] = plan_for_goal(creature)
+                print "plan is",creature[Keys.plan]
             elif len(creature[Keys.plan]) > 0:
                 printout += execute(creature, creature[Keys.plan].pop(0))
-        #cls()
         draw_world()
-        for item in printout:
-            print item
-        input = raw_input(">")
-        #sleep(.2)
+        if printout:
+            for item in printout:
+                print item
+            input = raw_input(">")
+        else:
+            sleep(.2)
 
 setup_world()
 play()

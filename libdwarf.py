@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 
 #   Immutable state   #
 
@@ -16,7 +18,8 @@ ALL_KINDS = {
     'axe': {'weight': 'light'},
     'dwarf': {'weight': 'heavy'},
     'cliff': {'weight': 'massive'},
-    'tree': {'weight': 'massive'}
+    'tree': {'weight': 'massive'},
+    'workbench': {'weight': 'heavy'}
 }
 
 GLYPH_MAP = {
@@ -44,17 +47,35 @@ WIDTH = 15
 def get_all_actions():
     # Actions are 3-tuples of (precontitions, action, postconditions)
     action_templates = [
-        ({'actor of_kind creature', 'actor has_path_to any_kind'},
-            'actor go_to any_kind',
-         {'actor at any_kind'}),
+        # walk to an object of a certain kind
+        ({('actor', 'of_kind', 'creature'), 
+          ('actor', 'has_path_to', 'any_kind')},
+                ('actor', 'go_to', 'any_kind'),
+         {('actor', 'at', 'any_kind')}),
 
-        ({'actor has axe', 'actor at tree'},
-            'actor destroy tree',
-            {'actor at wood'}),
+        # cutting down a tree
+        ({('actor', 'has', 'axe'),
+          ('actor', 'at', 'tree')},
+            ('actor', 'destroy', 'tree'),
+          {('actor', 'at', 'wood')}),
 
-        ({'any_kind is_of_weight light', 'actor at any_kind'},
-         'actor get any_kind',
-         {'actor has any_kind'})
+        # pick up a light object
+        ({('any_kind', 'is_of_weight', 'light'),
+          ('actor', 'at', 'any_kind')},
+            ('actor', 'get', 'any_kind'),
+         {('actor', 'has', 'any_kind')}),
+
+        # # make an axe from wood and stone using a workbench
+        # ({'actor has wood', 'actor has stone', 'actor at workbench'},
+        #  'actor make axe',
+        #  {'actor has axe'}),
+
+        # # make a wooden workbench
+        # ({'actor has wood'},
+        #  'actor make workbench',
+        #  {'actor at workbench'})
+
+
     ]
 
     def action_includes_str(action, item):
@@ -70,13 +91,28 @@ def get_all_actions():
         gets list of new actions where each action is the old action with
         oldstr replaced with each of the game's kinds
         """
-        new_action = [set([]), "", set([])]
-        for constraint in action[0]:
-            new_action[0].add(constraint.replace(oldstr, newstr))
-        new_action[1] = action[1].replace(oldstr, newstr)
-        for constraint in action[2]:
-            new_action[2].add(constraint.replace(oldstr, newstr))
-        return tuple(new_action)
+        def str_replace_in_constraint(constraint, oldstr, newstr):
+            new_constraint = []
+            for index, word in enumerate(constraint):
+                if type(word) is str:
+                     new_constraint.append(
+                        constraint[index].replace(oldstr, newstr))
+                else:
+                    new_constraint.append(word)
+            return tuple(new_constraint)
+
+
+        def str_replace_over_set_of_constraints(tuples, oldstr, newstr):
+            result = []
+            for constraint in tuples:
+                result.append(str_replace_in_constraint(constraint, oldstr, newstr))
+            return set(result)
+
+        action = list(deepcopy(action))
+        action[0] = str_replace_over_set_of_constraints(action[0], oldstr, newstr)
+        action[1] = str_replace_in_constraint(action[1], oldstr, newstr)
+        action[2] = str_replace_over_set_of_constraints(action[2], oldstr, newstr)
+        return tuple(action)
 
     result = []
     for action in action_templates:
@@ -99,8 +135,12 @@ def get_all_actions_with_result(constraint):
     return filter(lambda x: action_has_result(x, constraint), ALL_ACTIONS)
 
 
-def condition_met_by_world(condition, actor=None, target=None):
-    words = condition.split(' ')
+def condition_met_by_world(words, actor=None, target=None):
+    condition = ''
+    # convert to sentence representation
+    for item in words:
+        condition += str(item) + ' '
+    condition = condition[:-1] # slice of trailing space
     verb = words[1]
     assert(len(words)) == 3
 
@@ -148,6 +188,7 @@ def condition_met_by_world(condition, actor=None, target=None):
             return contains(actor, (Keys.kind, words[2]))
 
     print condition
+    
     assert 1 == 0
 
 
