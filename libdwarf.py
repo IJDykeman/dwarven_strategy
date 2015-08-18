@@ -1,44 +1,10 @@
 from copy import deepcopy
-
-
+from display import draw_world
+from immutable_deffinitions import *
 #   Immutable state   #
 
 
-class Keys:
-    loc = 0
-    name = 1
-    kind = 3
-    inventory = 4
-    weight = 5
-    goal = 6
-    plan = 7
 
-ALL_KINDS = {
-    'wood': {'weight': 'light'},
-    'axe': {'weight': 'light'},
-    'dwarf': {'weight': 'heavy'},
-    'cliff': {'weight': 'massive'},
-    'tree': {'weight': 'massive'},
-    'workbench': {'weight': 'heavy'}
-}
-
-GLYPH_MAP = {
-    'dwarf': 'D',  # u'\u263A',
-    'dirt_tile': ',',
-    'stone_tile': '.',
-    'grass': '"',
-    'cliff': '#',
-    'axe': 'a',
-    'tree': 'T',
-    'wood': 'w'
-}
-
-SUBTYPES = {
-    'impassable': {'cliff'},
-    'creature': {'dwarf'}
-}
-
-WIDTH = 15
 
 
 #   Actions   #
@@ -188,7 +154,7 @@ def condition_met_by_world(words, actor=None, target=None):
             return contains(actor, (Keys.kind, words[2]))
 
     print condition
-    
+
     assert 1 == 0
 
 
@@ -233,22 +199,6 @@ def is_of_kind(obj, kind):
     if kind in SUBTYPES and obj[Keys.kind] in SUBTYPES[kind]:
         return True
     return False
-
-
-def get_glyph(kind):
-    """
-    Returns the glyph for this kind if one is specified, else returns the first
-    letter of the kind.
-    """
-    if kind in GLYPH_MAP:
-        return GLYPH_MAP[kind]
-    return kind[0]
-
-
-def get_glyph_kind(glyph):
-    for key in GLYPH_MAP:
-        if GLYPH_MAP[key] == glyph:
-            return key
 
 
 def is_tile(obj):
