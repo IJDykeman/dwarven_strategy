@@ -1,7 +1,6 @@
-from libdwarf import *
 from time import sleep
-import os
 
+from libdwarf import *
 
 
 def create_simple_world():
@@ -44,17 +43,7 @@ def create_simple_world():
 ### Display   ###
 
 
-def draw_world():
-    print '\n' * 100
-    for x in range(WIDTH):
-        for y in range(WIDTH):
-            at_loc = select([(Keys.loc, (x, y))])
-            non_tiles = filter(is_not_tile, at_loc)
-            if non_tiles:
-                print get_glyph(non_tiles.pop()[Keys.kind]),
-            else:
-                print get_glyph(at_loc.pop()[Keys.kind]),
-        print''
+
 
 
 def plan_for_goal(creature):
@@ -72,7 +61,7 @@ def plan_for_goal(creature):
             plan.append(step[1])
         else:
             assert 1 == 0  # verb not recongnized
-    plan.append(('actor', 'has_completed_goal'))
+    plan.append(('actor', 'has_completed_goal', ''))
 
     return plan
 
@@ -136,8 +125,6 @@ def execute(actor, step):
     return printouts
 
 
-
-
 def setup_world():
     fili = {
         Keys.name: 'fili',
@@ -168,7 +155,8 @@ def setup_world():
     fili[Keys.goal] = ('actor', 'has', 'wood')
 
 def play():
-    while True:
+    init_screen()
+    while window_is_open():
         printout = []
 
         for creature in select([(Keys.kind, 'creature')]):
@@ -178,12 +166,13 @@ def play():
             elif len(creature[Keys.plan]) > 0:
                 printout += execute(creature, creature[Keys.plan].pop(0))
         draw_world()
-        if printout:
-            for item in printout:
-                print item
-            input = raw_input(">")
-        else:
-            sleep(.2)
+        # if printout:
+        #     for item in printout:
+        #         print item
+        #     input = raw_input(">")
+        # else:
+        #     sleep(.2)
+        sleep(.2)
 
 setup_world()
 play()

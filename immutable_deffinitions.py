@@ -1,3 +1,4 @@
+
 class Keys:
     loc = 0
     name = 1
@@ -16,7 +17,6 @@ ALL_KINDS = {
     'workbench': {'weight': 'heavy'}
 }
 
-
 SUBTYPES = {
     'impassable': {'cliff'},
     'creature': {'dwarf'}
@@ -24,16 +24,17 @@ SUBTYPES = {
 
 WIDTH = 15
 
-GLYPH_MAP = {
-    'dwarf': 'D',  # u'\u263A',
-    'dirt_tile': ',',
-    'stone_tile': '.',
-    'grass': '"',
-    'cliff': '#',
-    'axe': 'a',
-    'tree': 'T',
-    'wood': 'w'
+DISPLAY_INFO_MAP = {
+    'dwarf': ('D', 'white'),
+    'dirt_tile': (',', 'brown'),
+    'stone_tile': ('.', 'gray'),
+    'grass': ('"', 'green'),
+    'cliff': ('#', 'gray'),
+    'axe': ('a', 'red'),
+    'tree': ('T', 'green'),
+    'wood': ('w' 'brown')
 }
+
 
 
 def get_glyph(kind):
@@ -41,12 +42,18 @@ def get_glyph(kind):
     Returns the glyph for this kind if one is specified, else returns the first
     letter of the kind.
     """
-    if kind in GLYPH_MAP:
-        return GLYPH_MAP[kind]
+    if kind in DISPLAY_INFO_MAP:
+        return DISPLAY_INFO_MAP[kind][0]
     return kind[0]
 
 
+def get_color_name(kind):
+    if kind in DISPLAY_INFO_MAP:
+        return DISPLAY_INFO_MAP[kind][1]
+    return 'orange'
+
+
 def get_glyph_kind(glyph):
-    for key in GLYPH_MAP:
-        if GLYPH_MAP[key] == glyph:
+    for key in DISPLAY_INFO_MAP:
+        if DISPLAY_INFO_MAP[key][0] == glyph:
             return key

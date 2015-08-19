@@ -1,5 +1,4 @@
 from copy import deepcopy
-from display import draw_world
 from immutable_deffinitions import *
 #   Immutable state   #
 
@@ -14,7 +13,7 @@ def get_all_actions():
     # Actions are 3-tuples of (precontitions, action, postconditions)
     action_templates = [
         # walk to an object of a certain kind
-        ({('actor', 'of_kind', 'creature'), 
+        ({('actor', 'of_kind', 'creature'),
           ('actor', 'has_path_to', 'any_kind')},
                 ('actor', 'go_to', 'any_kind'),
          {('actor', 'at', 'any_kind')}),
@@ -392,3 +391,64 @@ def get_path(start, goal):
     while path[0] in came_from:
         path.insert(0, came_from[path[0]])
     return path[1:]
+
+#### Display ####
+
+
+import libtcodpy as libtcod
+
+
+def init_screen():
+    libtcod.console_set_custom_font('courier12x12_aa_tc.png',
+                                   libtcod.FONT_TYPE_GREYSCALE
+                                   | libtcod.FONT_LAYOUT_TCOD)
+    libtcod.console_init_root(WIDTH*3, WIDTH*3,
+                              'The Smartest Dwarf in the Fortress', False)
+    libtcod.console_set_default_foreground(0, libtcod.white)
+
+
+FOREGROUND_COLOR_MAP = {
+    'dwarf': libtcod.white,
+    'grass': libtcod.green,
+    'cliff': libtcod.dark_gray,
+    'axe': libtcod.silver,
+    'tree': libtcod.dark_green,
+    'wood': libtcod.dark_sepia
+}
+
+BACKGROUND_COLOR_MAP = {
+    'dirt_tile': libtcod.sepia,
+    'stone_tile': libtcod.gray
+}
+
+
+def draw_world():
+    for x in range(WIDTH):
+        for y in range(WIDTH):
+            at_loc = select([(Keys.loc, (x, y))])
+            non_tiles = filter(is_not_tile, at_loc)
+            item_to_display = ' '
+            foreground_color = libtcod.white
+            if non_tiles:
+                item_to_display = non_tiles.pop()[Keys.kind]
+                foreground_color = FOREGROUND_COLOR_MAP[item_to_display]
+                libtcod.console_set_default_foreground(0, foreground_color)
+
+            # if non_tiles:
+            tile = [tile for tile in at_loc if '_tile' in tile[Keys.kind]][0]
+            backround_color = BACKGROUND_COLOR_MAP[tile[Keys.kind]]
+            libtcod.console_set_default_background(0, backround_color)
+            libtcod.console_put_char(0, y, x,
+                                     get_glyph(item_to_display),
+                                         libtcod.BKGND_SET)
+            # else:  # it's a tile
+            #     backround_color = BACKGROUND_COLOR_MAP[at_loc.pop()[Keys.kind]]
+            #     libtcod.console_set_default_background(0, backround_color)
+            #     libtcod.console_put_char(0, y, x, ' ', libtcod.BKGND_SET)
+
+    # libtcod.console_blit(panel, 0, 0, 300, 300, 0, 0, 0)
+    libtcod.console_flush()
+
+
+def window_is_open():
+    return not libtcod.console_is_window_closed()
