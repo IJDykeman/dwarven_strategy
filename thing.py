@@ -29,7 +29,6 @@ def create_simple_world():
                     Keys.loc: (x, y)
                 })
 
-
     add_obj_to_state({
         Keys.kind: 'axe',
         Keys.loc: (10, 5),
@@ -39,11 +38,6 @@ def create_simple_world():
         Keys.loc: (7, 8),
         Keys.inventory:  [{Keys.kind: 'wood'}]
     })
-
-### Display   ###
-
-
-
 
 
 def plan_for_goal(creature):
@@ -106,7 +100,8 @@ def execute(actor, step):
             put_obj_in_actors_inventory(targets[0], actor)
         else:
             actor_failed(actor)
-        printouts.append(actor[Keys.name] + " picks up " + targets[0][Keys.kind])
+        printouts.append(actor[Keys.name] + " picks up "
+                         + targets[0][Keys.kind])
 
     elif verb == 'destroy':
         targets = select([(Keys.loc, actor[Keys.loc]), (Keys.kind, words[2])])
@@ -147,12 +142,10 @@ def setup_world():
     add_obj_to_state(fili)
     create_simple_world()
     add_object_at_all('cliff', [(Keys.kind, 'stone_tile')])
-
-    #actions = get_steps_to_condition('actor has wood', [], fili, None)
-    #if actions is not None:
-    #    print [action[1] for action in actions]
+    add_object_at_all('grass', [(Keys.kind, 'dirt_tile')])
 
     fili[Keys.goal] = ('actor', 'has', 'wood')
+
 
 def play():
     init_screen()
@@ -160,9 +153,10 @@ def play():
         printout = []
 
         for creature in select([(Keys.kind, 'creature')]):
-            if creature[Keys.goal] is not None and len(creature[Keys.plan]) == 0:
+            if (creature[Keys.goal] is not None
+                    and len(creature[Keys.plan]) == 0):
                 creature[Keys.plan] = plan_for_goal(creature)
-                print "plan is",creature[Keys.plan]
+                print "plan is", creature[Keys.plan]
             elif len(creature[Keys.plan]) > 0:
                 printout += execute(creature, creature[Keys.plan].pop(0))
         draw_world()

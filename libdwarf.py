@@ -1,103 +1,6 @@
-from copy import deepcopy
 from immutable_deffinitions import *
-#   Immutable state   #
-
-
-
-
-
+from actions import *
 #   Actions   #
-
-
-def get_all_actions():
-    # Actions are 3-tuples of (precontitions, action, postconditions)
-    action_templates = [
-        # walk to an object of a certain kind
-        ({('actor', 'of_kind', 'creature'),
-          ('actor', 'has_path_to', 'any_kind')},
-                ('actor', 'go_to', 'any_kind'),
-         {('actor', 'at', 'any_kind')}),
-
-        # cutting down a tree
-        ({('actor', 'has', 'axe'),
-          ('actor', 'at', 'tree')},
-            ('actor', 'destroy', 'tree'),
-          {('actor', 'at', 'wood')}),
-
-        # pick up a light object
-        ({('any_kind', 'is_of_weight', 'light'),
-          ('actor', 'at', 'any_kind')},
-            ('actor', 'get', 'any_kind'),
-         {('actor', 'has', 'any_kind')}),
-
-        # # make an axe from wood and stone using a workbench
-        # ({'actor has wood', 'actor has stone', 'actor at workbench'},
-        #  'actor make axe',
-        #  {'actor has axe'}),
-
-        # # make a wooden workbench
-        # ({'actor has wood'},
-        #  'actor make workbench',
-        #  {'actor at workbench'})
-
-
-    ]
-
-    def action_includes_str(action, item):
-        for constraint in action[0].union(action[2]):
-            if item in constraint:
-                return True
-        if item in action[1]:
-            return True
-        return False
-
-    def get_action_with_string_replaced(action, oldstr, newstr):
-        """
-        gets list of new actions where each action is the old action with
-        oldstr replaced with each of the game's kinds
-        """
-        def str_replace_in_constraint(constraint, oldstr, newstr):
-            new_constraint = []
-            for index, word in enumerate(constraint):
-                if type(word) is str:
-                     new_constraint.append(
-                        constraint[index].replace(oldstr, newstr))
-                else:
-                    new_constraint.append(word)
-            return tuple(new_constraint)
-
-
-        def str_replace_over_set_of_constraints(tuples, oldstr, newstr):
-            result = []
-            for constraint in tuples:
-                result.append(str_replace_in_constraint(constraint, oldstr, newstr))
-            return set(result)
-
-        action = list(deepcopy(action))
-        action[0] = str_replace_over_set_of_constraints(action[0], oldstr, newstr)
-        action[1] = str_replace_in_constraint(action[1], oldstr, newstr)
-        action[2] = str_replace_over_set_of_constraints(action[2], oldstr, newstr)
-        return tuple(action)
-
-    result = []
-    for action in action_templates:
-        if action_includes_str(action, 'any_kind'):
-            for kind in ALL_KINDS:
-                result.append(get_action_with_string_replaced(action,
-                                                              'any_kind', kind))
-        else:
-            result.append(action)
-    return result
-
-ALL_ACTIONS = get_all_actions()
-
-
-def action_has_result(action, constraint):
-    return constraint in action[2]
-
-
-def get_all_actions_with_result(constraint):
-    return filter(lambda x: action_has_result(x, constraint), ALL_ACTIONS)
 
 
 def condition_met_by_world(words, actor=None, target=None):
@@ -105,7 +8,7 @@ def condition_met_by_world(words, actor=None, target=None):
     # convert to sentence representation
     for item in words:
         condition += str(item) + ' '
-    condition = condition[:-1] # slice of trailing space
+    condition = condition[:-1]  # slice off trailing space
     verb = words[1]
     assert(len(words)) == 3
 
@@ -185,52 +88,6 @@ def get_steps_to_condition(goal_condition, actions_so_far, actor, target):
     return result
 
 
-#   Querying Immutable Properties   #
-
-
-def is_of_kind(obj, kind):
-    """
-    True iff obj is of kind.
-    NB Checks also to see if obj's kind is a sub-kind of argument kind.
-    """
-    if obj[Keys.kind] == kind:
-        return True
-    if kind in SUBTYPES and obj[Keys.kind] in SUBTYPES[kind]:
-        return True
-    return False
-
-
-def is_tile(obj):
-    return 'tile' in obj[Keys.kind].split('_')
-
-
-def is_not_tile(obj):
-    return not is_tile(obj)
-
-
-def in_world(loc):
-    return 0 <= loc[0] < WIDTH and 0 <= loc[1] < WIDTH
-
-
-def get_adjacent_tiles(p):
-    x = p[0]
-    y = p[1]
-    result = []
-    for loc in [(x + 1, y), (x, y + 1), (x - 1, y), (x, y - 1)]:
-        if in_world(loc):
-            result.append(loc)
-    return result
-
-
-def get_weight(kind):
-    """
-    Returns weight of kind
-    """
-    if kind in ALL_KINDS:
-        return ALL_KINDS[kind]['weight']
-    elif is_tile(kind):
-        return 'immobile'
-
 #   Declare Mutable World State #
 
 state = []
@@ -280,6 +137,13 @@ def get_all_passable_from(loc, obj_set=state):
     return result
 
 
+def contains(subject, constraints):
+    """
+    returns true if any item in subject's inventory matches constraints
+    """
+    return len(select([constraints], obj_set=subject[Keys.inventory])) > 0
+
+
 #   Mutating World State   #
 
 
@@ -297,6 +161,8 @@ def add_obj_to_state(properties, obj_set=state):
         if not Keys.plan in properties:
             properties[Keys.plan] = []
     properties[Keys.weight] = get_weight(properties[Keys.kind])
+    properties[Keys.layer] = get_layer(properties[Keys.kind])
+
     obj_set.append(properties)
 
 
@@ -323,15 +189,7 @@ def add_object_at_all(kind_to_add, criteria):
         })
 
 
-def contains(subject, constraints):
-    """
-    returns true if any item in subject's inventory matches constraints
-    """
-    return len(select([constraints], obj_set=subject[Keys.inventory])) > 0
-
-
 #   Path Finding   #
-
 
 class PriorityQueue:
 
@@ -346,7 +204,6 @@ class PriorityQueue:
 
     def get(self):
         return self.elements.pop(0)[1]
-
 
 
 def heuristic(a, b):
@@ -399,9 +256,9 @@ import libtcodpy as libtcod
 
 
 def init_screen():
-    libtcod.console_set_custom_font('courier12x12_aa_tc.png',
-                                   libtcod.FONT_TYPE_GREYSCALE
-                                   | libtcod.FONT_LAYOUT_TCOD)
+    libtcod.console_set_custom_font('dejavu16x16_gs_tc.png',
+                                    libtcod.FONT_TYPE_GRAYSCALE
+                                    | libtcod.FONT_LAYOUT_TCOD)
     libtcod.console_init_root(WIDTH*3, WIDTH*3,
                               'The Smartest Dwarf in the Fortress', False)
     libtcod.console_set_default_foreground(0, libtcod.white)
@@ -409,16 +266,16 @@ def init_screen():
 
 FOREGROUND_COLOR_MAP = {
     'dwarf': libtcod.white,
-    'grass': libtcod.green,
-    'cliff': libtcod.dark_gray,
+    'grass': libtcod.dark_green,
+    'cliff': libtcod.gray,
     'axe': libtcod.silver,
     'tree': libtcod.dark_green,
     'wood': libtcod.dark_sepia
 }
 
 BACKGROUND_COLOR_MAP = {
-    'dirt_tile': libtcod.sepia,
-    'stone_tile': libtcod.gray
+    'dirt_tile': libtcod.dark_sepia,
+    'stone_tile': libtcod.dark_gray
 }
 
 
@@ -430,23 +287,17 @@ def draw_world():
             item_to_display = ' '
             foreground_color = libtcod.white
             if non_tiles:
+                non_tiles = sorted(non_tiles, key=lambda x: x[Keys.layer])
                 item_to_display = non_tiles.pop()[Keys.kind]
                 foreground_color = FOREGROUND_COLOR_MAP[item_to_display]
                 libtcod.console_set_default_foreground(0, foreground_color)
-
-            # if non_tiles:
             tile = [tile for tile in at_loc if '_tile' in tile[Keys.kind]][0]
             backround_color = BACKGROUND_COLOR_MAP[tile[Keys.kind]]
             libtcod.console_set_default_background(0, backround_color)
             libtcod.console_put_char(0, y, x,
                                      get_glyph(item_to_display),
-                                         libtcod.BKGND_SET)
-            # else:  # it's a tile
-            #     backround_color = BACKGROUND_COLOR_MAP[at_loc.pop()[Keys.kind]]
-            #     libtcod.console_set_default_background(0, backround_color)
-            #     libtcod.console_put_char(0, y, x, ' ', libtcod.BKGND_SET)
+                                     libtcod.BKGND_SET)
 
-    # libtcod.console_blit(panel, 0, 0, 300, 300, 0, 0, 0)
     libtcod.console_flush()
 
 
