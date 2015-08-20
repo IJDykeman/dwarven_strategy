@@ -133,15 +133,22 @@ def get_all_actions():
             ('actor', 'get', 'any_kind'),
          {('actor', 'has', 'any_kind')}),
 
+        # drop an object
+        ({('actor', 'has', 'any_kind')},
+            ('actor', 'drop', 'any_kind'),
+         {('actor', 'at', 'any_kind')}),
+
         # # make an axe from wood and stone using a workbench
         # ({'actor has wood', 'actor has stone', 'actor at workbench'},
         #  'actor make axe',
         #  {'actor has axe'}),
 
-        # # make a wooden workbench
-        # ({'actor has wood'},
-        #  'actor make workbench',
-        #  {'actor at workbench'})
+        # make a wooden workbench
+        ({('actor', 'has', 'wood')},
+            ('actor', 'make', 'workbench'),
+         {('actor', 'at', 'workbench')})
+
+
 
 
     ]
@@ -172,9 +179,11 @@ def get_all_actions():
         def str_replace_over_set_of_constraints(tuples, oldstr, newstr):
             result = []
             for constraint in tuples:
+                assert type(constraint) is tuple
                 result.append(str_replace_in_constraint(constraint,
                                                         oldstr, newstr))
             return set(result)
+
 
         action = list(deepcopy(action))
         action[0] = str_replace_over_set_of_constraints(action[0],

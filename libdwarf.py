@@ -1,8 +1,7 @@
 from immutable_deffinitions import *
 from actions import *
-#   Actions   #
 
-
+#   Action planning with conditions   #
 def condition_met_by_world(words, actor=None, target=None):
     condition = ''
     # convert to sentence representation
@@ -62,7 +61,6 @@ def condition_met_by_world(words, actor=None, target=None):
 
 def get_steps_to_condition(goal_condition, actions_so_far, actor, target):
     result = []
-
     def add_steps_to_result(goal_condition, actions_so_far, actor, target):
         if condition_met_by_world(goal_condition, actor=actor, target=target):
             return actions_so_far
@@ -85,6 +83,7 @@ def get_steps_to_condition(goal_condition, actions_so_far, actor, target):
 
     add_steps_to_result(goal_condition, actions_so_far,
                         actor, target)
+    print "the calculated plan is", result
     return result
 
 

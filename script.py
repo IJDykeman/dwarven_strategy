@@ -47,14 +47,7 @@ def plan_for_goal(creature):
         words = step[1]
         verb = words[1]
 
-        if verb == 'go_to':
-            plan.append(step[1])
-        elif verb == 'destroy':
-            plan.append(step[1])
-        elif verb == 'get':
-            plan.append(step[1])
-        else:
-            assert 1 == 0  # verb not recongnized
+        plan.append(step[1])
     plan.append(('actor', 'has_completed_goal', ''))
 
     return plan
@@ -65,6 +58,7 @@ def actor_failed(actor):
 
 
 def execute(actor, step):
+    # TODO handle case of action being impossible
     printouts = []
     words = step
     verb = words[1]
@@ -103,6 +97,12 @@ def execute(actor, step):
         printouts.append(actor[Keys.name] + " picks up "
                          + targets[0][Keys.kind])
 
+    elif verb == 'drop':
+        targets = select([(Keys.kind, words[2])], obj_set=actor[Keys.inventory])
+        obj = targets[0]
+        actor[Keys.inventory].remove(obj)
+        add_obj_to_state(obj)
+
     elif verb == 'destroy':
         targets = select([(Keys.loc, actor[Keys.loc]), (Keys.kind, words[2])])
         if len(targets) > 0:
@@ -113,6 +113,10 @@ def execute(actor, step):
     elif verb == 'has_completed_goal':
         actor[Keys.goal] = None
         actor[Keys.plan] = []
+
+    elif verb == 'make':
+        new_obj = {Keys.kind: words[2]}
+        actor[Keys.inventory].append(new_obj)
 
     else:
         print words
@@ -144,7 +148,7 @@ def setup_world():
     add_object_at_all('cliff', [(Keys.kind, 'stone_tile')])
     add_object_at_all('grass', [(Keys.kind, 'dirt_tile')])
 
-    fili[Keys.goal] = ('actor', 'has', 'wood')
+    fili[Keys.goal] = ('actor', 'at', 'workbench')
 
 
 def play():
